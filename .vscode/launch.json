@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-NequiTestApp<nequi_test>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.branch.nequi_test.NequiTestApp",
+            "projectName": "nequi_test",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

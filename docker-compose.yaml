@@ -1,0 +1,49 @@
+version: '3.9'
+
+networks:
+  backend_network:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: db_service
+    restart: always
+    env_file:
+      - .env_db
+    ports:
+      - "6000:5432"
+    volumes:
+      - psqlData:/var/lib/postgresql/data
+    networks:
+      - backend_network
+
+  backend:
+    build: ./backend
+    container_name: backend_service
+    depends_on:
+      - postgres
+    env_file:
+      - .env_back
+    ports:
+      - "8080:8080"
+    restart: always
+    networks:
+      - backend_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_service
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - backend_network
+
+volumes:
+  psqlData:
