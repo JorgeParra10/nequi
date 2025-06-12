@@ -3,7 +3,6 @@ package com.accenture.dominio.servicios;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
 import com.accenture.dominio.excepcion.ErrorBadRequest;
 import com.accenture.dominio.excepcion.ErrorException;
 import com.accenture.dominio.excepcion.ErrorNotFound;
@@ -12,18 +11,14 @@ import com.accenture.dominio.interfaces.IFranchisePersistence;
 import com.accenture.dominio.interfaces.IPaginator;
 import com.accenture.dominio.model.Franchise;
 import com.accenture.dominio.model.PageResponse;
-import com.accenture.dominio.servicios.FranchiseService;
 import com.accenture.dominio.util.ConstantsDomain;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -214,7 +209,7 @@ class FranchiseServiceTest {
         StepVerifier.create(franchiseService.createFranchise(null))
             .expectErrorSatisfies(error -> {
                 assertTrue(error instanceof ErrorBadRequest);
-                assertEquals(ConstantsDomain.ERR_NAME_NULL, error.getMessage());
+                assertEquals(ConstantsDomain.ERROR_NAME_NULL, error.getMessage());
             })
             .verify();
     }
@@ -225,7 +220,7 @@ class FranchiseServiceTest {
         StepVerifier.create(franchiseService.createFranchise(""))
             .expectErrorSatisfies(error -> {
                 assertTrue(error instanceof ErrorBadRequest);
-                assertEquals(ConstantsDomain.ERR_NAME_NULL, error.getMessage());
+                assertEquals(ConstantsDomain.ERROR_NAME_NULL, error.getMessage());
             })
             .verify();
     }
@@ -236,7 +231,7 @@ class FranchiseServiceTest {
         StepVerifier.create(franchiseService.updateFranchiseName(1L, null))
             .expectErrorSatisfies(error -> {
                 assertTrue(error instanceof ErrorBadRequest);
-                assertEquals(ConstantsDomain.ERR_NAME_NULL, error.getMessage());
+                assertEquals(ConstantsDomain.ERROR_NAME_NULL, error.getMessage());
             })
             .verify();
     }
@@ -247,7 +242,7 @@ class FranchiseServiceTest {
         StepVerifier.create(franchiseService.updateFranchiseName(1L, ""))
             .expectErrorSatisfies(error -> {
                 assertTrue(error instanceof ErrorBadRequest);
-                assertEquals(ConstantsDomain.ERR_NAME_NULL, error.getMessage());
+                assertEquals(ConstantsDomain.ERROR_NAME_NULL, error.getMessage());
             })
             .verify();
     }

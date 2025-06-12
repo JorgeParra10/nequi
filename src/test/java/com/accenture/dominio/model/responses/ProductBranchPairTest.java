@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import com.accenture.dominio.model.Branch;
 import com.accenture.dominio.model.Product;
-import com.accenture.dominio.model.responses.ProductBranchPair;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProductBranchPairTest {

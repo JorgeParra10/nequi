@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import com.accenture.dominio.model.Branch;
 import com.accenture.dominio.model.Franchise;
-import com.accenture.dominio.model.responses.BranchWithFranchise;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class BranchWithFranchiseTest {

@@ -14,7 +14,6 @@ import com.accenture.dominio.model.Branch;
 import com.accenture.dominio.model.Franchise;
 import com.accenture.dominio.model.PageResponse;
 import com.accenture.dominio.model.responses.BranchWithFranchise;
-import com.accenture.dominio.servicios.BranchService;
 import com.accenture.dominio.util.ConstantsDomain;
 
 import reactor.core.publisher.Flux;
@@ -96,7 +95,7 @@ class BranchServiceTest {
         StepVerifier.create(result)
             .expectErrorMatches(ex -> 
                 ex instanceof ErrorNotFound && 
-                ex.getMessage().contains(ConstantsDomain.ERR_FRANCHISE_NOT_FOUND + "99"))
+                ex.getMessage().contains(ConstantsDomain.ERROR_FRANCHISE_NOT_FOUND + "99"))
             .verify();
     }
 
@@ -168,7 +167,7 @@ class BranchServiceTest {
         StepVerifier.create(branchService.createBranch("", 1L))
             .expectErrorMatches(error -> 
                 error instanceof ErrorBadRequest && 
-                error.getMessage().equals(ConstantsDomain.ERR_NAME_NULL))
+                error.getMessage().equals(ConstantsDomain.ERROR_NAME_NULL))
             .verify();
     }
     
@@ -251,7 +250,7 @@ class BranchServiceTest {
         StepVerifier.create(result)
             .expectErrorMatches(error -> 
                 error instanceof ErrorNotFound && 
-                error.getMessage().contains(ConstantsDomain.ERR_BRANCH_NOT_FOUND + "99"))
+                error.getMessage().contains(ConstantsDomain.ERROR_BRANCH_NOT_FOUND + "99"))
             .verify();
     }
     
@@ -261,7 +260,7 @@ class BranchServiceTest {
         StepVerifier.create(branchService.updateBranchName(1L, ""))
             .expectErrorMatches(error -> 
                 error instanceof ErrorBadRequest && 
-                error.getMessage().equals(ConstantsDomain.ERR_NAME_NULL))
+                error.getMessage().equals(ConstantsDomain.ERROR_NAME_NULL))
             .verify();
     }
     
@@ -271,7 +270,7 @@ class BranchServiceTest {
         StepVerifier.create(branchService.updateBranchName(null, "New Name"))
             .expectErrorMatches(error -> 
                 error instanceof ErrorBadRequest && 
-                error.getMessage().equals(ConstantsDomain.ERR_ID_NULL))
+                error.getMessage().equals(ConstantsDomain.ERROR_ID_NULL))
             .verify();
     }
     

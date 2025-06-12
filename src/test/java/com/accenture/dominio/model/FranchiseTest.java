@@ -2,8 +2,6 @@ package com.accenture.dominio.model;
 
 import org.junit.jupiter.api.Test;
 
-import com.accenture.dominio.model.Franchise;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class FranchiseTest {
