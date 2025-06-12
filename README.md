@@ -1,106 +1,147 @@
-# Proyecto Docker Compose
+# Reto accenture/nequi webflux
+---
 
-Este proyecto contiene una configuración de `docker-compose` para levantar un entorno con PostgreSQL, un backend y PgAdmin.
+## Descripción del Proyecto
 
-## Prerrequisitos
+**Reto Accenture** es una aplicación de ejemplo para la gestión de  franquicias, sucursales y productos, desarrollada en Java con el stack reactive de Spring y Reactor. El objetivo es demostrar buenas prácticas de arquitectura hexagonal, pruebas unitarias y manejo de errores en un contexto de dominio bancario/financiero.
 
-Antes de comenzar, asegúrate de tener instalado lo siguiente:
+La aplicación ofrece servicios para:
+- Crear, obtener paginado y actualizar franquicias.
+- Crear y obtener paginadas sucursales asociadas a franquicias.
+- Agregar productos a sucursales, obtener productos de sucursales paginado y actualizar su stock.
+- Consultar productos con mayor stock por sucursal de una franquicia.
 
-- **Docker**: [Descargar e instalar Docker](https://docs.docker.com/get-docker/)
-- **Docker Compose**: [Verificar instalación](https://docs.docker.com/compose/install/)
+---
 
-Para verificar que Docker y Docker Compose están instalados, ejecuta en la terminal:
+## Estructura del Proyecto
 
-```sh
-docker --version
 ```
+NEQUI/
+├── src/
+│   ├── main/java/com/accenture/
+│   │   ├── dominio/           # Lógica de negocio y entidades del dominio
+│   │   ├── applicacion/       # Lógica de aplicación (controlador de excepciones de aplicación)
+│   │   └── infrastructura/   # Adaptadores de infraestructura (controladores, repositorios, utilidades externas)
+│   └── test/java/com/accenture/dominio/servicios/ # Pruebas unitarias de servicios de dominio
+└── terraform/ # Terraform
+├── build.gradle
+├── README.md
+└── ...
 
-```sh
-docker-compose --version
-```
+---
 
-Si no están instalados, sigue las instrucciones en los enlaces proporcionados.
+## ⚙️ Tecnologías Utilizadas
+- Java 17+
+- Spring WebFlux (reactivo)
+- Reactor (Mono/Flux)
+- R2DBC (MySQL)
+- JUnit 5
+- Mockito
+- Gradle
+- Docker
+- Terraform
+- AWS Services
+- Swagger/OpenAPI (springdoc-openapi-starter-webflux-ui)
 
-## Instalación y configuración
+---
 
-### 1. Clonar el repositorio
+## Instalación y Ejecución Local
 
-```sh
-git clone git@github.com:JorgeParra10/nequi.git
-cd nequi
-```
+### Prerrequisitos
+- Java 17 o superior
+- Gradle instalado (o usar el wrapper `./gradlew`)
 
-### 2. Configurar variables de entorno
+### Pasos para correr la aplicación
 
-Debes crear los archivos `.env_db` y `.env_back` en la raíz del proyecto. Asegúrate de configurar correctamente las variables necesarias para la base de datos y el backend.
+1. **Clona el repositorio:**
+   ```bash
+   git clone https://github.com/JorgeParra10/nequi.git
+   cd nequi
+   ```
+2. **Construye el proyecto:**
+   ```bash
+   ./gradlew build
+   ```
+3. **Ejecuta los tests:**
+   ```bash
+   ./gradlew test
+   ```
+4. **Corre la aplicación:**
+   Se puede correr con:
+   ```bash
+   ./gradlew bootRun
+   ```
+   luego se abrira el swagger y desde alli poder interactuar con la api.
+   si no se abre, puedes ir manualmente a `http://localhost:7070/swagger-ui/index.html`
+   - NOTA: También se puede consumir la api desde postman localmente, estos son los endpoints, solo debes descargae el siguiente archivo y pegarlo en postman:
+   [Postman Collection](https://drive.google.com/file/d/12QkY1Pk_eaivGDFgklxd1bsDO69BpEYV/view?usp=sharing)
+   
+   - NOTA: También se puede consumir el api gateway desde postman reemplazando en la coleccion anterior de postman `http://localhost:7070` por la url del api gateway: `https://bmss4jjp91.execute-api.us-east-2.amazonaws.com/prod`
 
-Ejemplo de `.env_db`:
+---
 
-```env
-POSTGRES_USER=usuario
-POSTGRES_PASSWORD=contraseña
-POSTGRES_DB=nombre_de_la_base
-```
+## Pruebas
+Las pruebas unitarias cubren todos los casos de negocio relevantes, incluyendo validaciones, errores y flujos exitosos. Puedes revisar los archivos en `src/test/java/com/accenture/dominio/servicios/`.
 
-Ejemplo de `.env_back`:
+---
 
-```env
-SPRING_DATASOURCE_URL=jdbc:postgresql://db_service:5432/nombre_de_la_base
-SPRING_DATASOURCE_USERNAME=usuario
-SPRING_DATASOURCE_PASSWORD=contraseña
-SPRING_JPA_HIBERNATE_DDL_AUTO=update
-springdoc.api-docs.enabled=true
-```
+## Despliegue con Docker y Terraform
 
-### 3. Construir y levantar los servicios
+### 🐳 Docker
 
-Ejecuta el siguiente comando para construir y levantar los contenedores:
+1. **Construcción de la imagen:**
+   ```sh
+   docker build -t accenture-api:latest .
+   ```
+2. **Login en ECR:**
+   ```sh
+   aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin "uri del repositorio en ecr"
+   ```
+3. **Taggear y subir la imagen:**
+   ```sh
+   docker tag accenture-api:latest "uri del ecr"
+   docker push "la imagen que se tagueo anteriormente"
+   ```
 
-```sh
-docker-compose up --build -d
-```
+### ☁️ Terraform (Infraestructura en AWS)
 
-### 4. Verificar que los contenedores están corriendo
+1. **Pre-requisitos:**
+   - Tener [Terraform](https://www.terraform.io/downloads.html) instalado.
+   - Tener configuradas las credenciales de AWS (`aws configure`).
+2. **Variables:**
+   - Edita el archivo `terraform.tfvars` con los valores de tu entorno (VPC, subnets, etc).
+3. **Inicializa y aplica:**
+   ```sh
+   cd terraform
+   terraform init
+   terraform plan
+   terraform apply
+   ```
+4. **IMPORTANTE:**
+   - **Antes de aplicar Terraform, debes subir manualmente la imagen Docker al repositorio ECR.**
+   - Luego, asegúrate de actualizar la referencia de la imagen en el bloque `image` de la definición de task en Terraform (`main.tf`). Ejemplo:
+     ```hcl
+     image = "926413415764.dkr.ecr.us-east-2.amazonaws.com/accenture/reto-webflux:latest"
+     ```
 
-```sh
-docker ps
-```
+5. **Recursos creados:**
+   - ECS Cluster y Service
+   - Application Load Balancer (ALB)
+   - API Gateway HTTP
+   - SSM Parameter Store (variables de entorno)
+   - CloudWatch Log Group
+   - Security Groups
 
-Deberías ver los servicios `db_service`, `backend_service` y `pgadmin_service` ejecutándose.
+6. **Destrucción:**
+   ```sh
+   terraform destroy
+   ```
 
-## Acceso a los servicios
+---
 
-- **Base de datos (PostgreSQL):** Disponible en `localhost:6000`.
-- **Backend:** Disponible en `http://localhost:8080`.
-- **Docs:** Disponible en `http://localhost:8080/docs/swagger-ui/swagger-ui/index.html`.
-- **PgAdmin:** Accesible en `http://localhost:5050`.
-  - Usuario: `admin@example.com`
-  - Contraseña: `admin`
+## 💡 Notas Adicionales
+- El diseño sigue principios de arquitectura hexagonal y se encuentra separado por capas.
+- El código está preparado para ser extensible y testeable.
+- Se aplica programación reactive.
 
-## Comandos útiles
-
-### Detener los contenedores
-
-```sh
-docker-compose down
-```
-
-### Ver logs de un servicio específico
-
-```sh
-docker logs -f backend_service
-```
-
-### Reiniciar un servicio
-
-```sh
-docker-compose restart backend
-```
-
-### Eliminar volúmenes y contenedores
-
-```sh
-docker-compose down -v
-```
-
-## Fin
+---

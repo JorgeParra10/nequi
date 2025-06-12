@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: ${APPLICATION_NAME:apifranchises}
+  r2dbc:
+     url: ${DB_URL:r2dbc:mysql://reto-accenture.czi4wuoi45uu.us-east-2.rds.amazonaws.com/prueba_accenture}
+     username: ${DB_USERNAME:admin}
+     password: ${DB_PASSWORD:Password}
+server:
+  port: 7070
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+  parameter-name-from-java-code: true
+  webjars:
+    prefix: /webjars
+  info:
+    title: Documentación de la prueba accenture
+    description: Aca encontraran toda la información de los endpoint creados para el reto de franquicias.
+    version: 1.0.0
+logging:
+  level:
+    org.springframework.web: TRACE
+    org.springframework.web.reactive.result.method.annotation: TRACE
